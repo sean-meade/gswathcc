@@ -27,12 +27,19 @@ sensors = [{
 
 class TestSensorRequests(unittest.TestCase):
 
-  def test_post_sensor(self):
-    for sensor in sensors:
-      putResponse = requests.put(BASE + f"sensor/sensor_id={sensor['sensor_id']}/city={sensor['city']}/country={sensor['country']}")
-      self.assertEqual(putResponse.status_code, 200)
-      self.assertEqual(len(putResponse.json()), 2)
+  # def test_post_sensor(self):
+  #   for sensor in sensors:
+  #     putResponse = requests.put(BASE + f"sensor/sensor_id={sensor['sensor_id']}/city={sensor['city']}/country={sensor['country']}")
+  #     self.assertEqual(putResponse.status_code, 200)
+  #     self.assertEqual(len(putResponse.json()), 2)
 
+  def test_get_sensor(self):
+    for sensor in sensors:
+      getResponse = requests.get(BASE + f"sensor/sensor_id={sensor['sensor_id']}/city={sensor['city']}/country={sensor['country']}")
+      self.assertEqual(getResponse.status_code, 200)
+      self.assertEqual(len(getResponse.json()), 3)
+
+      # print(getResponse.json())
 
 if __name__ == "__main__":
   unittest.main()
