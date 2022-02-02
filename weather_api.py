@@ -107,12 +107,22 @@ class WeatherEntry(Resource):
         # The result is actually an instance of the VideoModel class (it's an object)
         return result
     
+class AveragesOfWeatherData(Resource):
+    @marshal_with(weather_data_resource_fields)
+    def get(self, sensor_ids, days, metrics):
+    
+        result = WeatherEntryModel.query.filter_by(sensor=sensor_ids).all()
+        if not result:
+            abort(404, message="Could not find video with that id...")
+        # The result is actually an instance of the VideoModel class (it's an object)
+        return result
 
 api.add_resource(
     Sensor, "/sensor/sensor_id=<int:sensor_id>/city=<string:city>/country=<string:country>")
 
 api.add_resource(WeatherEntry, "/data/sensor=<string:sensor_id>")
 
+api.add_resource(AveragesOfWeatherData, "/avg_data/sensor=<string:sensor_ids>/days=<int:days>/metrics=<string:metrics>")
 
 # Start server
 if __name__ == "__main__":

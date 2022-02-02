@@ -35,5 +35,10 @@ weatherEntries = [{
 # putResponse = requests.put(BASE + "/data/sensor=1234", weatherEntries[0])
 # print(putResponse.json())
 
-getResponse = requests.get(BASE + "/data/sensor=1234")
+# getResponse = requests.get(BASE + "/data/sensor=1234")
+# print(getResponse.json())
+
+# AveragesOfWeatherData request
+
+getResponse = requests.get(BASE + "/avg_data/sensor=1234/days=3/metrics=temp")
 print(getResponse.json())
