@@ -40,5 +40,5 @@ weatherEntries = [{
 
 # AveragesOfWeatherData request
 
-getResponse = requests.get(BASE + "/avg_data/sensor=1234/days=3/metrics=temp")
+getResponse = requests.get(BASE + "/avg_data/sensor=1234/days=3/metrics=temp;humidity")
 print(getResponse.json())
