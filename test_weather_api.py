@@ -1,5 +1,5 @@
 import unittest
-import weather_api
+from weather_api import app
 import requests
 
 BASE = "http://127.0.0.1:5000/"
@@ -23,14 +23,15 @@ sensors = [{
   "country": "Wales"}
   ]
 
-print(sensors[0]["sensor_id"])
+
 
 class TestSensorRequests(unittest.TestCase):
 
   def test_post_sensor(self):
     for sensor in sensors:
+      putResponse = requests.put(BASE + f"sensor/sensor_id={sensor['sensor_id']}/city={sensor['city']}/country={sensor['country']}")
+      print(putResponse.json())
 
-      postResponse = requests.put(BASE + f"/sensor/sensor_id=<int:{sensor['sensor_id']}>/city=<string:{sensor['city']}>/country=<string:{sensor['country']}>")
-      self.assertEqual(postResponse.status_code, 200)
-      self.assertEqual(len(postResponse.json(), 1))
 
+if __name__ == "__main__":
+  unittest.main()
