@@ -39,7 +39,7 @@ class TestSensorRequests(unittest.TestCase):
       self.assertEqual(getResponse.status_code, 200)
       self.assertEqual(len(getResponse.json()), 3)
 
-      # print(getResponse.json())
+
 
 if __name__ == "__main__":
   unittest.main()

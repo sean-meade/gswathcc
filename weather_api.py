@@ -38,12 +38,6 @@ class WeatherEntryModel(db.Model):
 
 # db.create_all()
 
-sensor_add_args = reqparse.RequestParser()
-
-sensor_add_args.add_argument("city", type=str, help="Enter the City the sensor is in", required=True)
-sensor_add_args.add_argument("county", type=str, help="Enter the County the sensor is in", required=True)
-
-
 sensor_resource_fields = {
   "city": fields.String,
   "country": fields.String,
@@ -77,6 +71,32 @@ class Sensor(Resource):
         # The result is actually an instance of the VideoModel class (it's an object)
         return result
 
+weather_data_resource_fields = {
+  "sensor": fields.Integer,
+  "temp": fields.Integer,
+  "pop": fields.Integer,
+  "humidity": fields.Integer,
+  "wind_speed": fields.Integer
+}
+
+data_add_args = reqparse.RequestParser()
+
+data_add_args.add_argument("temp", type=int, help="Enter temperature in Celsius", required=True)
+data_add_args.add_argument("pop", type=int, help="Enter probability of precipitation in integer (e.g. for 20% input 20)", required=True)
+data_add_args.add_argument("humidity", type=int, help="Enter humidity in hygrometers", required=True)
+data_add_args.add_argument("wind_speed", type=int, help="Enter wind speed in km/hr", required=True)
+
+# Resource to handle queries about the sensor
+class WeatherData(Resource):
+    @marshal_with(weather_data_resource_fields)
+    def put(self, sensor_id):
+      args = data_add_args.parse_args()
+
+      data = WeatherEntryModel(sensor=sensor_id, temp=args["temp"], pop=args["pop"], humidity=args["humidity"], wind_speed=args["wind_speed"])
+      db.session.add(data)
+      db.session.commit()
+      return data, 201
+    
 
 api.add_resource(
     Sensor, "/sensor/sensor_id=<int:sensor_id>/city=<string:city>/country=<string:country>")
