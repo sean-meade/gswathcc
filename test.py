@@ -32,8 +32,8 @@ weatherEntries = [{
   "wind_speed": 8,
   }]
 
-putResponse = requests.put(BASE + "/data/sensor=1234", weatherEntries[0])
-print(putResponse.json())
+# putResponse = requests.put(BASE + "/data/sensor=1234", weatherEntries[0])
+# print(putResponse.json())
 
-# getResponse = requests.get(BASE + "sensor/sensor_id=30/city=d/country=trk")
-# print(getResponse.json())
+getResponse = requests.get(BASE + "/data/sensor=1234")
+print(getResponse.json())

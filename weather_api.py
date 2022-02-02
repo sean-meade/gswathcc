@@ -96,6 +96,15 @@ class WeatherEntry(Resource):
       db.session.add(data)
       db.session.commit()
       return data, 201
+
+    @marshal_with(weather_data_resource_fields)
+    def get(self, sensor_id):
+    
+        result = WeatherEntryModel.query.filter_by(sensor=sensor_id).first()
+        if not result:
+            abort(404, message="Could not find video with that id...")
+        # The result is actually an instance of the VideoModel class (it's an object)
+        return result
     
 
 api.add_resource(
