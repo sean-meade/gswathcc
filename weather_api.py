@@ -4,12 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 
 import datetime
 
-
+#  Create app and api
 app = Flask(__name__)
 api = Api(app)
 
+# Create app to db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/database.db'
 
+# Create a db for the app
 db = SQLAlchemy(app)
 
 class SensorModel(db.Model):
@@ -29,3 +31,4 @@ class WeatherEntryModel(db.Model):
   pop = db.Column(db.Integer, nullable=False)
   humidity = db.Column(db.Integer, nullable=False)
   wind_speed = db.Column(db.Integer, nullable=False)
+
