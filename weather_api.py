@@ -87,7 +87,7 @@ data_add_args.add_argument("humidity", type=int, help="Enter humidity in hygrome
 data_add_args.add_argument("wind_speed", type=int, help="Enter wind speed in km/hr", required=True)
 
 # Resource to handle queries about the sensor
-class WeatherData(Resource):
+class WeatherEntry(Resource):
     @marshal_with(weather_data_resource_fields)
     def put(self, sensor_id):
       args = data_add_args.parse_args()
@@ -101,44 +101,7 @@ class WeatherData(Resource):
 api.add_resource(
     Sensor, "/sensor/sensor_id=<int:sensor_id>/city=<string:city>/country=<string:country>")
 
-
-# class WeatherEntry(Resource):
-#     def put(self, sensor_id):
-
-#         data = WeatherEntryModel(
-#             sensor=sensor_id, temp=args["temp"], pop=args["pop"], humidity=args["humidity"], wind_speed=args["wind_speed"])
-#         db.session.add(data)
-#         db.session.commit()
-#         return data, 201
-
-#     def get(self, sensor_ids, metric_felids, days):
-
-#         metrics = metric_felids.split(';')
-#         date = datetime.datetime.now() - datetime.timedelta(days)
-#         day = date.day
-#         month = date.month
-#         if sensor_ids == '':
-#             result = WeatherEntryModel.query.all()
-#         else:
-#             sensors = sensor_ids.split(';')
-
-#         for sensor in sensors:
-#             result = WeatherEntryModel.query.filter_by(sensor=sensor).all()
-#             temps = []
-#             humidities = []
-#             if result != []:
-#                 for r in result:
-#                     print(r.temp)
-#                     temps.append(r.temp)
-#                     humidities.append(r.humidity)
-#                 temp_avg = sum(temps) / len(temps)
-#                 hum_avg = sum(humidities) / len(humidities)
-#                 print(sensor, temp_avg, hum_avg)
-#             results = {"sensor": str(sensor), "temp_avg": str(
-#                 temp_avg), "hum_avg": str(hum_avg)}
-
-#         # The result is actually an instance of the VideoModel class (it's an object)
-#         return results
+api.add_resource(WeatherEntry, "/data/sensor=<string:sensor_id>")
 
 
 # Start server
