@@ -30,7 +30,8 @@ class TestSensorRequests(unittest.TestCase):
   def test_post_sensor(self):
     for sensor in sensors:
       putResponse = requests.put(BASE + f"sensor/sensor_id={sensor['sensor_id']}/city={sensor['city']}/country={sensor['country']}")
-      print(putResponse.json())
+      self.assertEqual(putResponse.status_code, 200)
+      self.assertEqual(len(putResponse.json()), 2)
 
 
 if __name__ == "__main__":
