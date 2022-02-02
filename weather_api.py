@@ -76,7 +76,8 @@ weather_data_resource_fields = {
   "temp": fields.Integer,
   "pop": fields.Integer,
   "humidity": fields.Integer,
-  "wind_speed": fields.Integer
+  "wind_speed": fields.Integer,
+  "created_at": fields.DateTime
 }
 
 data_add_args = reqparse.RequestParser()
@@ -100,7 +101,7 @@ class WeatherEntry(Resource):
     @marshal_with(weather_data_resource_fields)
     def get(self, sensor_id):
     
-        result = WeatherEntryModel.query.filter_by(sensor=sensor_id).first()
+        result = WeatherEntryModel.query.filter_by(sensor=sensor_id).all()
         if not result:
             abort(404, message="Could not find video with that id...")
         # The result is actually an instance of the VideoModel class (it's an object)
