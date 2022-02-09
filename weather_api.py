@@ -2,6 +2,8 @@ from flask import Flask, request
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import Session
+from time import strptime
+
 
 import datetime
 
@@ -120,7 +122,7 @@ class WeatherEntry(Resource):
     
         result = WeatherEntryModel.query.filter_by(sensor=sensor_id).all()
         if not result:
-            abort(404, message="Could not find video with that id...")
+            abort(404, message="Could not find sensor with that id...")
         
         return result
     
@@ -129,11 +131,14 @@ class AveragesOfWeatherData(Resource):
     def get(self, sensor_ids, days, metrics):
         # My plan with the date was to use the number of days to create a date and use the day, month and year of that date to filter the results that came back for sensor ids
         date = datetime.datetime.now() - datetime.timedelta(days)
-        day = date.day
-        month = date.month
+        # day = date.day
+        # month = date.month
+        
+
+        # test_val = WeatherEntryModel.query.filter_by(sensor=1234).all()
         # This is the final dictionary returned
         sensors_avg_metrics = {}
-        # grad all metrics and sensors
+        # grab all metrics and sensors
         metrics_array = metrics.split(';')
         sensors_array = sensor_ids.split(';')
         metric_values = {}
@@ -144,7 +149,9 @@ class AveragesOfWeatherData(Resource):
           for metric in metrics_array:
             metric_values_list = []
             for result in results:
-              metric_values_list.append(getattr(result, metric))
+              # Get all data entries in the date range:
+              if result.created_at >= date:
+                metric_values_list.append(getattr(result, metric))
             if len(metric_values_list) > 0:
               metric_values["avg_" + metric] = sum(metric_values_list) / len(metric_values_list)
           # add them all to the dict to be return with the sensor as their key
