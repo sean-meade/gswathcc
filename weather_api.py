@@ -1,9 +1,6 @@
-from flask import Flask, request
+from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import Session
-from time import strptime
-
 
 import datetime
 
@@ -36,25 +33,25 @@ class WeatherEntryModel(db.Model):
     sensor = db.Column(db.Integer, db.ForeignKey('sensortable.sensor_id'))
     # The datetime is automatically created when the data entry is made
     created_at = db.Column(
-        db.DateTime, default=datetime.datetime.now(), nullable=False, )
+        db.DateTime, default=datetime.datetime.now(), nullable=False)
     temp = db.Column(db.Integer, nullable=False)
     pop = db.Column(db.Integer, nullable=False)
     humidity = db.Column(db.Integer, nullable=False)
     wind_speed = db.Column(db.Integer, nullable=False)
 
 # This creates the database but only needs to run once and while the local server is running it can mess with requests if left on
-x=1
-while x < 2:
-  db.create_all()
-  x = x+1
+# x=1
+# while x < 2:
+#   db.create_all()
+#   x = x+1
 
-# Define values needed in sensor put request
+# Define values returned in sensor put request
 sensor_resource_fields = {
   "city": fields.String,
   "country": fields.String,
 }
 
-# Define values needed in sensor get request
+# Define values returned in sensor get request
 sensor_get_resource_fields = {
   "sensor_id": fields.Integer,
   "city": fields.String,
@@ -81,7 +78,7 @@ class Sensor(Resource):
     # Get sensor info from db
     @marshal_with(sensor_get_resource_fields)
     def get(self, sensor_id, city, country):
-        # Grad the first result and if there is none abort
+        # Grab the first result and if there is none abort
         result = SensorModel.query.filter_by(sensor_id=sensor_id).first()
         if not result:
             abort(404, message="Could not find sensor with that id...")
@@ -98,6 +95,9 @@ weather_data_resource_fields = {
   "created_at": fields.DateTime
 }
 
+# Create a new RequestParser object
+# this will automatically parse through the request being sent
+# and make sure it fits the guidelines provided below that and has the correct information in it
 data_add_args = reqparse.RequestParser()
 
 # Add the arguments that are required to make a data entry
@@ -124,18 +124,15 @@ class WeatherEntry(Resource):
         if not result:
             abort(404, message="Could not find sensor with that id...")
         
-        return result
+        return result, 200
     
     
 class AveragesOfWeatherData(Resource):
+    
     def get(self, sensor_ids, days, metrics):
-        # My plan with the date was to use the number of days to create a date and use the day, month and year of that date to filter the results that came back for sensor ids
-        date = datetime.datetime.now() - datetime.timedelta(days)
-        # day = date.day
-        # month = date.month
-        
+        # Get the date relevant to the number of days entered in datetime format.
+        date = datetime.datetime.now() - datetime.timedelta(days)        
 
-        # test_val = WeatherEntryModel.query.filter_by(sensor=1234).all()
         # This is the final dictionary returned
         sensors_avg_metrics = {}
         # grab all metrics and sensors
@@ -145,16 +142,16 @@ class AveragesOfWeatherData(Resource):
         # For each sensor the user requests get all the weather data for that one (I would start with date I think and then use sensor to narrow down further)
         for sensor in sensors_array:
           results = WeatherEntryModel.query.filter_by(sensor=sensor).all()
+          metric_values_list = []
           # for each metric the user has chosen make a list of all the values in one array and get the average
           for metric in metrics_array:
-            metric_values_list = []
             for result in results:
               # Get all data entries in the date range:
               if result.created_at >= date:
                 metric_values_list.append(getattr(result, metric))
             if len(metric_values_list) > 0:
               metric_values["avg_" + metric] = sum(metric_values_list) / len(metric_values_list)
-          # add them all to the dict to be return with the sensor as their key
+          # add them all to the dict to be returned with the sensor as their key
           sensors_avg_metrics[sensor] = metric_values
       
         return sensors_avg_metrics, 200
